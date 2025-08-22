@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { 
   Home, 
@@ -11,7 +13,8 @@ import {
   Headphones,
   Play
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -43,13 +46,12 @@ const quickActions = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const pathname = usePathname();
   const collapsed = state === "collapsed";
 
-  const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive 
+  const isActive = (path: string) => pathname === path;
+  const getNavCls = (path: string) =>
+    isActive(path)
       ? "bg-primary/20 text-primary border-r-2 border-primary" 
       : "hover:bg-sidebar-accent/50 text-sidebar-foreground";
 
@@ -84,14 +86,13 @@ export function AppSidebar() {
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      end 
-                      className={getNavCls}
+                    <Link 
+                      href={item.url} 
+                      className={getNavCls(item.url)}
                     >
                       <item.icon className="w-4 h-4" />
                       {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -108,13 +109,13 @@ export function AppSidebar() {
               {quickActions.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
+                    <Link 
+                      href={item.url} 
                       className="hover:bg-accent/10 text-sidebar-foreground hover:text-accent"
                     >
                       <item.icon className="w-4 h-4" />
                       {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

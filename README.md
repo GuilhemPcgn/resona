@@ -1,73 +1,117 @@
-# Welcome to your Lovable project
+# Resona Sound Studio Hub
 
-## Project info
+Un studio de production audio professionnel construit avec Next.js, React et Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/c3baea89-4823-4804-8520-957b03692e9c
+## 🚀 Technologies
 
-## How can I edit this code?
+- **Framework**: Next.js 14 avec App Router
+- **UI**: React avec Radix UI et shadcn/ui
+- **Styling**: Tailwind CSS
+- **Base de données**: Supabase
+- **État**: TanStack Query
+- **Formulaires**: React Hook Form avec Zod
+- **Thèmes**: next-themes
 
-There are several ways of editing your application.
+## 📁 Structure du projet
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c3baea89-4823-4804-8520-957b03692e9c) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── app/                    # App Router de Next.js
+│   ├── layout.tsx         # Layout racine
+│   ├── page.tsx           # Page d'accueil
+│   ├── projects/          # Pages des projets
+│   ├── calendar/          # Pages du calendrier
+│   ├── studio/            # Pages du studio
+│   ├── clients/           # Pages des clients
+│   └── billing/           # Pages de facturation
+├── components/            # Composants réutilisables
+│   ├── ui/               # Composants UI de base
+│   ├── layout/           # Composants de mise en page
+│   └── dashboard/        # Composants du tableau de bord
+├── pages/                # Pages existantes (réutilisées)
+├── hooks/                # Hooks personnalisés
+├── lib/                  # Utilitaires et configurations
+└── integrations/         # Intégrations externes
 ```
 
-**Edit a file directly in GitHub**
+## 🛠️ Installation
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Cloner le repository**
+   ```bash
+   git clone <repository-url>
+   cd resona-sound-studio-hub
+   ```
 
-**Use GitHub Codespaces**
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   # ou
+   yarn install
+   # ou
+   pnpm install
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Configurer les variables d'environnement**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Remplir les variables nécessaires dans `.env.local`
 
-## What technologies are used for this project?
+4. **Lancer le serveur de développement**
+   ```bash
+   npm run dev
+   # ou
+   yarn dev
+   # ou
+   pnpm dev
+   ```
 
-This project is built with:
+5. **Ouvrir dans le navigateur**
+   ```
+   http://localhost:3000
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📝 Scripts disponibles
 
-## How can I deploy this project?
+- `npm run dev` - Lance le serveur de développement
+- `npm run build` - Construit l'application pour la production
+- `npm run start` - Lance l'application en mode production
+- `npm run lint` - Lance ESLint
 
-Simply open [Lovable](https://lovable.dev/projects/c3baea89-4823-4804-8520-957b03692e9c) and click on Share -> Publish.
+## 🎨 Fonctionnalités
 
-## Can I connect a custom domain to my Lovable project?
+- **Dashboard** - Vue d'ensemble des projets et activités
+- **Gestion de projets** - Création et suivi des projets audio
+- **Calendrier** - Planification des séances et rendez-vous
+- **Studio** - Interface de contrôle audio
+- **Gestion des clients** - Base de données clients
+- **Facturation** - Gestion des factures et paiements
+- **Interface responsive** - Optimisé pour tous les appareils
+- **Thème sombre/clair** - Support des thèmes
 
-Yes, you can!
+## 🔧 Configuration
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Tailwind CSS
+Le projet utilise Tailwind CSS avec une configuration personnalisée pour les couleurs et animations.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Supabase
+Configuration de la base de données dans `src/integrations/supabase/`.
+
+### Composants UI
+Utilisation de shadcn/ui avec des composants personnalisés dans `src/components/ui/`.
+
+## 📦 Déploiement
+
+Le projet est prêt pour le déploiement sur Vercel, Netlify ou tout autre plateforme supportant Next.js.
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.
