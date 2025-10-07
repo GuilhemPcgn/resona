@@ -48,7 +48,7 @@ const Index = () => {
             Aperçu de votre activité studio
           </p>
         </div>
-        
+       
         <div className="flex gap-3">
           <Button variant="outline" className="border-border/50">
             <Calendar className="w-4 h-4 mr-2" />
@@ -105,7 +105,7 @@ const Index = () => {
               Voir tout
             </Button>
           </div>
-          
+         
           <div className="grid gap-6">
             {projects.map((project) => (
               <ProjectCard key={project.id} {...project} />
@@ -116,11 +116,11 @@ const Index = () => {
         {/* Activity Sidebar */}
         <div className="space-y-6">
           <RecentActivity />
-          
+         
           {/* Quick Actions */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-foreground">Actions rapides</h3>
-            
+           
             <div className="grid gap-3">
               <Button 
                 variant="outline" 
@@ -132,7 +132,7 @@ const Index = () => {
                   <div className="text-xs text-muted-foreground">Programmer un rdv</div>
                 </div>
               </Button>
-              
+             
               <Button 
                 variant="outline" 
                 className="justify-start h-auto p-4 border-border/50 hover:border-primary/30 hover:bg-primary/5"
@@ -143,7 +143,7 @@ const Index = () => {
                   <div className="text-xs text-muted-foreground">Partager un fichier</div>
                 </div>
               </Button>
-              
+             
               <Button 
                 variant="outline" 
                 className="justify-start h-auto p-4 border-border/50 hover:border-primary/30 hover:bg-primary/5"

@@ -1,40 +1,27 @@
 # Resona Sound Studio Hub
 
-Un studio de production audio professionnel construit avec Next.js, React et Tailwind CSS.
+Une application complète pour la gestion de studio d'enregistrement avec frontend NextJS et backend NestJS, orchestrée avec Docker.
 
-## 🚀 Technologies
-
-- **Framework**: Next.js 14 avec App Router
-- **UI**: React avec Radix UI et shadcn/ui
-- **Styling**: Tailwind CSS
-- **Base de données**: Supabase
-- **État**: TanStack Query
-- **Formulaires**: React Hook Form avec Zod
-- **Thèmes**: next-themes
-
-## 📁 Structure du projet
+## 🏗️ Architecture
 
 ```
-src/
-├── app/                    # App Router de Next.js
-│   ├── layout.tsx         # Layout racine
-│   ├── page.tsx           # Page d'accueil
-│   ├── projects/          # Pages des projets
-│   ├── calendar/          # Pages du calendrier
-│   ├── studio/            # Pages du studio
-│   ├── clients/           # Pages des clients
-│   └── billing/           # Pages de facturation
-├── components/            # Composants réutilisables
-│   ├── ui/               # Composants UI de base
-│   ├── layout/           # Composants de mise en page
-│   └── dashboard/        # Composants du tableau de bord
-├── pages/                # Pages existantes (réutilisées)
-├── hooks/                # Hooks personnalisés
-├── lib/                  # Utilitaires et configurations
-└── integrations/         # Intégrations externes
+resona-sound-studio-hub/
+├── frontend/          # Application NextJS
+├── backend/           # API NestJS
+├── supabase/          # Configuration Supabase
+├── docker-compose.yml # Orchestration Docker
+├── start.sh          # Script de démarrage
+└── stop.sh           # Script d'arrêt
 ```
 
-## 🛠️ Installation
+## 🚀 Démarrage rapide
+
+### Prérequis
+
+- Docker et Docker Compose installés
+- Variables d'environnement Supabase configurées
+
+### Installation
 
 1. **Cloner le repository**
    ```bash
@@ -42,76 +29,155 @@ src/
    cd resona-sound-studio-hub
    ```
 
-2. **Installer les dépendances**
+2. **Configurer les variables d'environnement**
    ```bash
-   npm install
-   # ou
-   yarn install
-   # ou
-   pnpm install
+   cp env.example .env
+   # Éditer .env avec vos clés Supabase
    ```
 
-3. **Configurer les variables d'environnement**
+3. **Démarrer l'application**
    ```bash
-   cp .env.example .env.local
+   ./start.sh
    ```
-   Remplir les variables nécessaires dans `.env.local`
 
-4. **Lancer le serveur de développement**
+### Accès aux services
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **Supabase**: http://localhost:5432
+
+## 🛠️ Développement
+
+### Frontend (NextJS)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend (NestJS)
+
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+## 📦 Services Docker
+
+### Frontend
+- **Port**: 3000
+- **Technologie**: NextJS 14
+- **Build**: Mode standalone pour Docker
+
+### Backend
+- **Port**: 3001
+- **Technologie**: NestJS
+- **Base de données**: Supabase
+
+### Base de données
+- **Port**: 5432
+- **Technologie**: PostgreSQL (Supabase)
+
+## 🔧 Commandes utiles
+
+```bash
+# Démarrer tous les services
+./start.sh
+
+# Arrêter tous les services
+./stop.sh
+
+# Voir les logs
+docker-compose logs -f
+
+# Reconstruire les images
+docker-compose build --no-cache
+
+# Accéder au shell du frontend
+docker-compose exec frontend sh
+
+# Accéder au shell du backend
+docker-compose exec backend sh
+```
+
+## 📁 Structure des dossiers
+
+### Frontend (`/frontend`)
+```
+frontend/
+├── src/
+│   ├── app/           # Pages NextJS
+│   ├── components/    # Composants React
+│   ├── hooks/         # Hooks personnalisés
+│   ├── integrations/  # Intégrations (Supabase)
+│   └── lib/           # Utilitaires
+├── public/            # Assets statiques
+└── Dockerfile         # Configuration Docker
+```
+
+### Backend (`/backend`)
+```
+backend/
+├── src/
+│   ├── app/           # Modules NestJS
+│   └── integrations/  # Intégrations (Supabase)
+└── Dockerfile         # Configuration Docker
+```
+
+## 🔐 Variables d'environnement
+
+Créez un fichier `.env` à la racine avec :
+
+```env
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
+
+## 🐛 Dépannage
+
+### Problèmes courants
+
+1. **Ports déjà utilisés**
    ```bash
-   npm run dev
-   # ou
-   yarn dev
-   # ou
-   pnpm dev
+   # Vérifier les ports utilisés
+   lsof -i :3000
+   lsof -i :3001
    ```
 
-5. **Ouvrir dans le navigateur**
+2. **Images Docker corrompues**
+   ```bash
+   # Nettoyer et reconstruire
+   docker-compose down
+   docker system prune -a
+   ./start.sh
    ```
-   http://localhost:3000
+
+3. **Variables d'environnement manquantes**
+   ```bash
+   # Vérifier le fichier .env
+   cat .env
    ```
 
-## 📝 Scripts disponibles
+## 📝 API Endpoints
 
-- `npm run dev` - Lance le serveur de développement
-- `npm run build` - Construit l'application pour la production
-- `npm run start` - Lance l'application en mode production
-- `npm run lint` - Lance ESLint
+### Backend (NestJS)
 
-## 🎨 Fonctionnalités
-
-- **Dashboard** - Vue d'ensemble des projets et activités
-- **Gestion de projets** - Création et suivi des projets audio
-- **Calendrier** - Planification des séances et rendez-vous
-- **Studio** - Interface de contrôle audio
-- **Gestion des clients** - Base de données clients
-- **Facturation** - Gestion des factures et paiements
-- **Interface responsive** - Optimisé pour tous les appareils
-- **Thème sombre/clair** - Support des thèmes
-
-## 🔧 Configuration
-
-### Tailwind CSS
-Le projet utilise Tailwind CSS avec une configuration personnalisée pour les couleurs et animations.
-
-### Supabase
-Configuration de la base de données dans `src/integrations/supabase/`.
-
-### Composants UI
-Utilisation de shadcn/ui avec des composants personnalisés dans `src/components/ui/`.
-
-## 📦 Déploiement
-
-Le projet est prêt pour le déploiement sur Vercel, Netlify ou tout autre plateforme supportant Next.js.
+- `GET /` - Page d'accueil
+- `GET /api/projects` - Liste des projets
+- `GET /api/clients` - Liste des clients
+- `GET /api/studio` - Données du studio
 
 ## 🤝 Contribution
 
 1. Fork le projet
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
+2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT.
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
