@@ -82,3 +82,23 @@ restart: ## Redémarrer tous les services
 	@echo "🔄 Redémarrage des services..."
 	@./stop.sh
 	@./start.sh
+
+clean-docker: ## Nettoyer et reconstruire Docker
+	@echo "🧹 Nettoyage complet Docker..."
+	@./clean-rebuild.sh
+
+clean-cache: ## Nettoyer les caches de développement
+	@echo "🧹 Nettoyage des caches..."
+	@./clean-dev.sh
+
+clean-all: ## Nettoyer complètement le projet (cache + node_modules)
+	@echo "🧹 Nettoyage complet du projet..."
+	@./clean-dev.sh
+	@echo "🗑️  Suppression des node_modules..."
+	@rm -rf frontend/node_modules
+	@rm -rf backend/node_modules
+	@echo "✅ Nettoyage complet terminé!"
+	@echo "💡 N'oubliez pas de réinstaller les dépendances avec: make install"
+
+check-env: ## Vérifier la configuration des variables d'environnement
+	@./check-env.sh

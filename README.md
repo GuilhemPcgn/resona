@@ -18,10 +18,18 @@ resona-sound-studio-hub/
 
 ### Prérequis
 
-- Docker et Docker Compose installés
+- Docker et Docker Compose installés (pour la production)
+- Node.js 18 ou 20 (pour le développement)
 - Variables d'environnement Supabase configurées
 
-### Installation
+### Installation rapide
+
+**Premier démarrage ?** Utilisez le script automatique :
+```bash
+./first-start.sh
+```
+
+### Installation manuelle
 
 1. **Cloner le repository**
    ```bash
@@ -36,8 +44,18 @@ resona-sound-studio-hub/
    ```
 
 3. **Démarrer l'application**
+   
+   **Avec Docker (Production) :**
    ```bash
+   make start
+   # ou
    ./start.sh
+   ```
+   
+   **En développement :**
+   ```bash
+   make install    # Installer les dépendances
+   make dev        # Démarrer frontend + backend
    ```
 
 ### Accès aux services
@@ -82,6 +100,41 @@ npm run start:dev
 
 ## 🔧 Commandes utiles
 
+### Avec Make (recommandé)
+
+```bash
+# Démarrage
+make start              # Démarrer avec Docker
+make dev                # Démarrer en développement
+make stop               # Arrêter les services
+
+# Installation
+make install            # Installer les dépendances
+make install-tools      # Installer les outils (concurrently)
+
+# Nettoyage
+make clean-cache        # Nettoyer les caches
+make clean-docker       # Nettoyer et reconstruire Docker
+make clean-all          # Nettoyage complet
+
+# Développement
+make dev-frontend       # Frontend uniquement
+make dev-backend        # Backend uniquement
+make logs               # Voir les logs
+
+# Tests et qualité
+make test               # Lancer les tests
+make lint               # Lancer le linting
+make format             # Formater le code
+
+# Docker
+make shell-frontend     # Accéder au shell du frontend
+make shell-backend      # Accéder au shell du backend
+make restart            # Redémarrer les services
+```
+
+### Commandes Docker directes
+
 ```bash
 # Démarrer tous les services
 ./start.sh
@@ -95,10 +148,8 @@ docker-compose logs -f
 # Reconstruire les images
 docker-compose build --no-cache
 
-# Accéder au shell du frontend
+# Accéder au shell
 docker-compose exec frontend sh
-
-# Accéder au shell du backend
 docker-compose exec backend sh
 ```
 
@@ -138,6 +189,21 @@ SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
 ## 🐛 Dépannage
 
+### ⚠️ Problèmes après mise à jour ou installation
+
+Si vous rencontrez des problèmes (404, CSS manquant, erreurs "missing required error components") :
+
+```bash
+# Nettoyer et reconstruire avec Docker
+make clean-docker
+
+# OU pour le développement local
+make clean-cache
+make dev
+```
+
+**📖 Guide complet :** Consultez [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) pour plus de détails.
+
 ### Problèmes courants
 
 1. **Ports déjà utilisés**
@@ -145,20 +211,32 @@ SUPABASE_ANON_KEY=your_supabase_anon_key_here
    # Vérifier les ports utilisés
    lsof -i :3000
    lsof -i :3001
+   lsof -i :5432
    ```
 
 2. **Images Docker corrompues**
    ```bash
    # Nettoyer et reconstruire
-   docker-compose down
-   docker system prune -a
-   ./start.sh
+   make clean-docker
+   # ou manuellement:
+   docker-compose down -v
+   docker-compose build --no-cache
+   docker-compose up -d
    ```
 
 3. **Variables d'environnement manquantes**
    ```bash
    # Vérifier le fichier .env
    cat .env
+   ```
+
+4. **Problèmes de cache (CSS ne charge pas, etc.)**
+   ```bash
+   # Développement local
+   make clean-cache
+   
+   # Docker
+   make clean-docker
    ```
 
 ## 📝 API Endpoints

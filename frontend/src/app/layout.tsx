@@ -1,6 +1,7 @@
 import "@/index.css";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Resona Sound Studio Hub",
   description: "Studio de production audio professionnel",
 };
@@ -11,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body>
+    <html lang="fr" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         {children}
       </body>
     </html>
