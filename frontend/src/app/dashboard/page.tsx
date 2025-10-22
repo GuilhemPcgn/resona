@@ -12,10 +12,6 @@ import {
   Clock,
   FileAudio
 } from "lucide-react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppLayout from "@/components/layout/AppLayout";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
@@ -23,9 +19,7 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { useStats } from "@/hooks/use-stats";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const queryClient = new QueryClient();
-
-function DashboardContent() {
+export default function DashboardPage() {
   const { data: stats, isLoading, error } = useStats();
 
   const formatCurrency = (amount: number) => {
@@ -75,7 +69,8 @@ function DashboardContent() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <AppLayout>
+        <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -110,13 +105,15 @@ function DashboardContent() {
             </Card>
           ))}
         </div>
-      </div>
+        </div>
+      </AppLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <AppLayout>
+        <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Tableau de bord</h1>
@@ -130,12 +127,14 @@ function DashboardContent() {
             </p>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <AppLayout>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -261,20 +260,7 @@ function DashboardContent() {
           <RecentActivity />
         </div>
       </div>
-    </div>
-  );
-}
-
-export default function Dashboard() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppLayout>
-          <DashboardContent />
-        </AppLayout>
-      </TooltipProvider>
-    </QueryClientProvider>
+      </div>
+    </AppLayout>
   );
 }

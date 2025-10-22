@@ -1,5 +1,6 @@
 import "@/index.css";
 import type { Metadata } from "next";
+import { Providers } from "@/components/providers/Providers";
 
 export const metadata: Metadata = {
   title: "Resona Sound Studio Hub",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
