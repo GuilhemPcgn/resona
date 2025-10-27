@@ -3,6 +3,16 @@
 # Script de développement local pour Resona Sound Studio Hub
 echo "🚀 Démarrage du développement local..."
 
+# Nettoyer les processus existants avant de démarrer
+echo "🧹 Nettoyage des processus existants..."
+pkill -f "node.*next" 2>/dev/null || true
+pkill -f "node.*nest" 2>/dev/null || true
+pkill -f "npm.*dev" 2>/dev/null || true
+
+# Libérer les ports si nécessaire
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+
 # Vérifier si les dossiers existent
 if [ ! -d "frontend" ] || [ ! -d "backend" ]; then
     echo "❌ Dossiers frontend ou backend manquants!"
@@ -29,12 +39,32 @@ echo ""
 cleanup() {
     echo ""
     echo "🛑 Arrêt des services..."
-    kill $FRONTEND_PID $BACKEND_PID 2>/dev/null
+    
+    # Tuer les processus par PID
+    kill $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
+    
+    # Attendre un peu puis forcer l'arrêt
+    sleep 2
+    kill -9 $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
+    
+    # Nettoyage supplémentaire pour WSL
+    pkill -f "node.*next" 2>/dev/null || true
+    pkill -f "node.*nest" 2>/dev/null || true
+    pkill -f "npm.*dev" 2>/dev/null || true
+    
+    # Sur WSL, utiliser taskkill pour Windows
+    if grep -q Microsoft /proc/version 2>/dev/null; then
+        echo "🪟 Nettoyage WSL..."
+        taskkill //F //IM node.exe 2>/dev/null || true
+        taskkill //F //IM npm.exe 2>/dev/null || true
+    fi
+    
+    echo "✅ Services arrêtés!"
     exit 0
 }
 
-# Capturer Ctrl+C
-trap cleanup SIGINT
+# Capturer Ctrl+C et autres signaux
+trap cleanup SIGINT SIGTERM
 
 # Démarrer le frontend en arrière-plan
 echo "🖥️  Démarrage du frontend..."

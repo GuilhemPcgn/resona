@@ -91,9 +91,14 @@ clean-cache: ## Nettoyer les caches de développement
 	@echo "🧹 Nettoyage des caches..."
 	@./clean-dev.sh
 
-clean-all: ## Nettoyer complètement le projet (cache + node_modules)
+clean-ports: ## Nettoyer les ports et processus (pour WSL)
+	@echo "🧹 Nettoyage des ports et processus..."
+	@./clean-ports.sh
+
+clean-all: ## Nettoyer complètement le projet (cache + node_modules + ports)
 	@echo "🧹 Nettoyage complet du projet..."
 	@./clean-dev.sh
+	@./clean-ports.sh
 	@echo "🗑️  Suppression des node_modules..."
 	@rm -rf frontend/node_modules
 	@rm -rf backend/node_modules
