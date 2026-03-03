@@ -38,11 +38,11 @@ export async function GET() {
     // Helpers pour col DATE
     const d = (date: Date) => date.toISOString().slice(0, 10)
 
-    // 1) Projets actifs = tous sauf completed/delivered
+    // 1) Projets actifs = tous sauf completed/cancelled
     const { count: activeProjects, error: pErr } = await supabaseServer
       .from('projects')
       .select('*', { count: 'exact', head: true })
-      .in('status', ['draft', 'in_progress', 'mixing', 'mastering'])
+      .in('status', ['draft', 'in_progress', 'on_hold'])
     if (pErr) throw pErr
 
     // 2) Nouveaux projets ce mois-ci
@@ -91,7 +91,7 @@ export async function GET() {
     const { data: activeClientsRows, error: acErr } = await supabaseServer
       .from('projects')
       .select('client_id')
-      .in('status', ['draft', 'in_progress', 'mixing', 'mastering'])
+      .in('status', ['draft', 'in_progress', 'on_hold'])
     if (acErr) throw acErr
     const activeClients = new Set((activeClientsRows ?? []).map(p => p.client_id)).size
 

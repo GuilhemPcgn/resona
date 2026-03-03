@@ -1,14 +1,10 @@
 
 -- =============================================
--- Studio SaaS Seed (NO AUTH DEPENDENCY)
--- - Drops FK from profiles.id -> auth.users(id) if present
--- - Creates enum types if missing
--- - Inserts large, cross-linked fake data
+-- Studio SaaS Seed (NO AUTH DEPENDENCY) — STEP 2
+-- Exécuter seed_step1_enum_patch.sql EN PREMIER.
 -- =============================================
 
-BEGIN;
-
--- Drop ONLY the FK from public.profiles to auth.users if it exists
+-- Drop FK profiles → auth.users si elle existe
 DO $$
 DECLARE c TEXT;
 BEGIN
@@ -30,31 +26,22 @@ BEGIN
   END IF;
 END$$;
 
--- ENUMS
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'client_status') THEN
-        CREATE TYPE client_status AS ENUM ('active','inactive','prospect','vip');
+-- Suppression de studio_id sur toutes les tables qui pourraient l'avoir (CASCADE)
+DO $$
+DECLARE tbl TEXT;
+BEGIN
+  FOREACH tbl IN ARRAY ARRAY['clients','projects','sessions','invoices','tasks','files','comments','invoice_items','profiles']
+  LOOP
+    IF EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = tbl AND column_name = 'studio_id'
+    ) THEN
+      EXECUTE format('ALTER TABLE public.%I DROP COLUMN studio_id CASCADE', tbl);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'project_status') THEN
-        CREATE TYPE project_status AS ENUM ('draft','in_progress','on_hold','completed','cancelled');
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'session_type') THEN
-        CREATE TYPE session_type AS ENUM ('recording','mixing','mastering','editing','meeting');
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'session_location') THEN
-        CREATE TYPE session_location AS ENUM ('studio','remote','on_site');
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
-        CREATE TYPE task_status AS ENUM ('todo','in_progress','in_review','done','blocked');
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_priority') THEN
-        CREATE TYPE task_priority AS ENUM ('low','medium','high','urgent');
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'invoice_status') THEN
-        CREATE TYPE invoice_status AS ENUM ('draft','sent','overdue','paid','cancelled');
-    END IF;
-END $$;
+  END LOOP;
+END$$;
 
+BEGIN;
 
 -- Profiles
 INSERT INTO public.profiles (id, email, first_name, last_name, company, phone, avatar_url, role, created_at, updated_at)

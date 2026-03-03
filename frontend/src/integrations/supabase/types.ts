@@ -127,6 +127,7 @@ export type Database = {
           id: string
           is_final: boolean | null
           original_filename: string
+          peaks: Json | null
           project_id: string
           session_id: string | null
           tags: string[] | null
@@ -146,6 +147,7 @@ export type Database = {
           id?: string
           is_final?: boolean | null
           original_filename: string
+          peaks?: Json | null
           project_id: string
           session_id?: string | null
           tags?: string[] | null
@@ -165,6 +167,7 @@ export type Database = {
           id?: string
           is_final?: boolean | null
           original_filename?: string
+          peaks?: Json | null
           project_id?: string
           session_id?: string | null
           tags?: string[] | null
@@ -380,8 +383,10 @@ export type Database = {
           created_at: string
           deadline: string | null
           description: string | null
+          end_date: string | null
           genre: string | null
           id: string
+          start_date: string | null
           status: Database["public"]["Enums"]["project_status"] | null
           title: string
           total_tracks: number | null
@@ -395,8 +400,10 @@ export type Database = {
           created_at?: string
           deadline?: string | null
           description?: string | null
+          end_date?: string | null
           genre?: string | null
           id?: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"] | null
           title: string
           total_tracks?: number | null
@@ -410,8 +417,10 @@ export type Database = {
           created_at?: string
           deadline?: string | null
           description?: string | null
+          end_date?: string | null
           genre?: string | null
           id?: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"] | null
           title?: string
           total_tracks?: number | null
@@ -438,6 +447,7 @@ export type Database = {
       sessions: {
         Row: {
           client_id: string | null
+          clients?: { name: string; company: string | null } | null
           created_at: string
           duration_hours: number | null
           end_date: string
@@ -449,6 +459,7 @@ export type Database = {
           project_id: string
           session_type: Database["public"]["Enums"]["session_type"]
           start_date: string
+          status: Database["public"]["Enums"]["session_status"]
           studio_address: string | null
           title: string
           total_cost: number | null
@@ -468,6 +479,7 @@ export type Database = {
           project_id: string
           session_type: Database["public"]["Enums"]["session_type"]
           start_date: string
+          status?: Database["public"]["Enums"]["session_status"]
           studio_address?: string | null
           title: string
           total_cost?: number | null
@@ -487,6 +499,7 @@ export type Database = {
           project_id?: string
           session_type?: Database["public"]["Enums"]["session_type"]
           start_date?: string
+          status?: Database["public"]["Enums"]["session_status"]
           studio_address?: string | null
           title?: string
           total_cost?: number | null
@@ -592,19 +605,22 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      client_status: "active" | "inactive" | "completed"
-      invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
-      project_status:
-        | "draft"
-        | "in_progress"
-        | "mixing"
-        | "mastering"
-        | "completed"
-        | "delivered"
-      session_location: "studio" | "remote"
-      session_type: "recording" | "mixing" | "mastering" | "rehearsal"
+      // Corrigé : ajout de "prospect" et "vip" ; suppression de "completed" (invalide)
+      client_status: "active" | "inactive" | "prospect" | "vip"
+      // Inchangé (ordre normalisé : draft → sent → overdue → paid → cancelled)
+      invoice_status: "draft" | "sent" | "overdue" | "paid" | "cancelled"
+      // Corrigé : ajout de "on_hold" et "cancelled" ; suppression de "mixing", "mastering", "delivered" (invalides)
+      project_status: "draft" | "in_progress" | "on_hold" | "completed" | "cancelled"
+      // Corrigé : ajout de "on_site"
+      session_location: "studio" | "remote" | "on_site"
+      // Ajouté : statut des séances
+      session_status: "pending" | "confirmed" | "paid" | "cancelled"
+      // Corrigé : ajout de "editing" et "meeting" ; suppression de "rehearsal" (invalide)
+      session_type: "recording" | "mixing" | "mastering" | "editing" | "meeting" | "production"
+      // Inchangé
       task_priority: "low" | "medium" | "high" | "urgent"
-      task_status: "todo" | "in_progress" | "completed"
+      // Corrigé : ajout de "in_review", "done", "blocked" ; suppression de "completed" (invalide)
+      task_status: "todo" | "in_progress" | "in_review" | "done" | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never

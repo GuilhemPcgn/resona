@@ -13,6 +13,7 @@ import {
   Headphones,
   Play
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigation = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Projets", url: "/projects", icon: FolderOpen },
   { title: "Calendrier", url: "/calendar", icon: Calendar },
   { title: "Studio", url: "/studio", icon: Mic },
@@ -56,13 +57,17 @@ export function AppSidebar() {
       : "hover:bg-sidebar-accent/50 text-sidebar-foreground";
 
   return (
-    <Sidebar className={collapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
+    <Sidebar className={collapsed ? "w-14" : "w-56"} collapsible="icon">
+      <SidebarHeader className="border-b border-sidebar-border h-16 flex justify-center px-2">
         {!collapsed && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-hero flex items-center justify-center">
-              <Mic className="w-4 h-4 text-white" />
-            </div>
+          <div className="flex items-center gap-1">
+            <Image
+              src="/logo_resona.png"
+              alt="Resona"
+              width={68}
+              height={68}
+              className="object-contain shrink-0"
+            />
             <div>
               <h1 className="text-lg font-bold text-sidebar-foreground">Resona</h1>
               <p className="text-xs text-sidebar-foreground/60">Studio Management</p>
@@ -70,8 +75,14 @@ export function AppSidebar() {
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 rounded-lg bg-gradient-hero flex items-center justify-center mx-auto">
-            <Mic className="w-4 h-4 text-white" />
+          <div className="mx-auto">
+            <Image
+              src="/logo_resona.png"
+              alt="Resona"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
           </div>
         )}
       </SidebarHeader>
