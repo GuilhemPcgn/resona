@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { useState } from "react";
+import { GlobalPlayer } from "@/components/audio/GlobalPlayer";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Créer le QueryClient une seule fois avec useState pour éviter de le recréer à chaque render
@@ -26,6 +27,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster />
         <Sonner />
+        {/* Lecteur audio persistant — monté une seule fois, survit aux navigations */}
+        <GlobalPlayer />
       </TooltipProvider>
     </QueryClientProvider>
   );

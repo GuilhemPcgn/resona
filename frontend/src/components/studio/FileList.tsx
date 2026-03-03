@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Play,
+  Pause,
   Download,
   Trash2,
   Music,
@@ -13,6 +14,7 @@ import {
   FolderOpen,
   Loader2,
 } from "lucide-react";
+import { usePlayerStore, selectCurrentTrack, type Track } from "@/store/playerStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,13 +57,11 @@ interface Project {
 interface FileListProps {
   selectedProjectId: string;
   onProjectChange: (id: string) => void;
-  onPlay: (fileId: string, fileName: string) => void;
-  playingFileId: string | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtSize(bytes: number) {
+function fmtSize(bytes: number | null) {
   if (!bytes) return "— MB";
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
@@ -76,15 +76,15 @@ function fmtDate(iso: string) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function FileList({
-  selectedProjectId,
-  onProjectChange,
-  onPlay,
-  playingFileId,
-}: FileListProps) {
+export function FileList({ selectedProjectId, onProjectChange }: FileListProps) {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  // Global player store
+  const currentTrack = usePlayerStore(selectCurrentTrack);
+  const isPlaying    = usePlayerStore((s) => s.isPlaying);
+  const { setQueue, play, toggle } = usePlayerStore();
 
   // Projets pour le filtre
   const { data: projectsData } = useQuery<{ data: Project[] }>({
@@ -128,6 +128,23 @@ export function FileList({
       setDeleteId(null);
     },
   });
+
+  // Lecture via le GlobalPlayer
+  const handleFilePlay = (fileId: string) => {
+    const queue: Track[] = files.map((f) => ({ id: f.id, title: f.filename }));
+    const startIndex = files.findIndex((f) => f.id === fileId);
+    const idx = startIndex >= 0 ? startIndex : 0;
+
+    // If clicking the currently playing track → toggle play/pause
+    if (currentTrack?.id === fileId) {
+      toggle();
+      return;
+    }
+
+    // Set the whole project's files as queue and start at this track
+    setQueue(queue, idx);
+    play();
+  };
 
   // Téléchargement via URL signée
   const handleDownload = async (fileId: string, fileName: string) => {
@@ -220,37 +237,42 @@ export function FileList({
           {!isLoading && files.length > 0 && (
             <div className="space-y-2">
               {files.map((file) => {
-                const active = playingFileId === file.id;
+                const isCurrentTrack = currentTrack?.id === file.id;
+                const isActiveAndPlaying = isCurrentTrack && isPlaying;
                 return (
                   <div
                     key={file.id}
                     className={[
                       "flex items-center gap-3 p-3 rounded-lg border transition-all duration-200",
-                      active
+                      isCurrentTrack
                         ? "border-primary/40 bg-primary/5"
                         : "border-border/30 hover:border-border/60 hover:bg-muted/20",
                     ].join(" ")}
                   >
-                    {/* Bouton play */}
+                    {/* Bouton play / pause */}
                     <Button
-                      variant={active ? "default" : "outline"}
+                      variant={isCurrentTrack ? "default" : "outline"}
                       size="sm"
                       className={[
                         "h-9 w-9 p-0 shrink-0",
-                        active
+                        isCurrentTrack
                           ? "bg-primary text-primary-foreground shadow-glow"
                           : "border-border/50 hover:border-primary/40 hover:bg-primary/5",
                       ].join(" ")}
-                      onClick={() => onPlay(file.id, file.filename)}
+                      onClick={() => handleFilePlay(file.id)}
                     >
-                      <Play className={`w-4 h-4 ${active ? "" : "ml-0.5"}`} />
+                      {isActiveAndPlaying ? (
+                        <Pause className="w-4 h-4" />
+                      ) : (
+                        <Play className={`w-4 h-4 ${isCurrentTrack ? "" : "ml-0.5"}`} />
+                      )}
                     </Button>
 
                     {/* Infos */}
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <p
                         className={`text-sm font-medium truncate ${
-                          active ? "text-primary" : "text-foreground"
+                          isCurrentTrack ? "text-primary" : "text-foreground"
                         }`}
                       >
                         {file.filename}

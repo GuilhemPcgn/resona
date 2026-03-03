@@ -26,7 +26,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -42,7 +41,6 @@ const navigation = [
 const quickActions = [
   { title: "Nouvelle séance", url: "/session/new", icon: Headphones },
   { title: "Upload audio", url: "/upload", icon: Music },
-  { title: "Lecteur", url: "/player", icon: Play },
 ];
 
 export function AppSidebar() {
@@ -57,35 +55,43 @@ export function AppSidebar() {
       : "hover:bg-sidebar-accent/50 text-sidebar-foreground";
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-56"} collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border h-16 flex justify-center px-2">
-        {!collapsed && (
-          <div className="flex items-center gap-1">
-            <Image
-              src="/logo_resona.png"
-              alt="Resona"
-              width={68}
-              height={68}
-              className="object-contain shrink-0"
-            />
-            <div>
-              <h1 className="text-lg font-bold text-sidebar-foreground">Resona</h1>
-              <p className="text-xs text-sidebar-foreground/60">Studio Management</p>
-            </div>
-          </div>
+    <Sidebar className={collapsed ? "w-14" : "w-48"} collapsible="icon">
+      {/* div plain — bypass SidebarHeader (shadcn y ajoute p-2 + overflow hidden) */}
+      <div
+        className="border-b border-sidebar-border shrink-0"
+        style={{
+          height: 64,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden", /* empêche l'image de déborder et bloquer d'autres éléments */
+        }}
+      >
+        {!collapsed ? (
+          <Image
+            src="/logo_patchbay.png"
+            alt="Resona"
+            width={180}
+            height={68}
+            className="object-contain shrink-0"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/logo_icon.png"
+            alt="Resona"
+            style={{
+              width: 120,
+              height: 120,
+              maxWidth: "none",
+              maxHeight: "none",
+              flexShrink: 0,
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
         )}
-        {collapsed && (
-          <div className="mx-auto">
-            <Image
-              src="/logo_resona.png"
-              alt="Resona"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
-          </div>
-        )}
-      </SidebarHeader>
+      </div>
 
       <SidebarContent className="py-4">
         <SidebarGroup>
@@ -120,8 +126,8 @@ export function AppSidebar() {
               {quickActions.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      href={item.url} 
+                    <Link
+                      href={item.url}
                       className="hover:bg-accent/10 text-sidebar-foreground hover:text-accent"
                     >
                       <item.icon className="w-4 h-4" />
@@ -130,6 +136,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

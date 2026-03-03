@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 // ─── Config maps ──────────────────────────────────────────────────────────────
 
 export const TYPE_CONFIG = {
-  recording:  { bg: "bg-primary/15",   text: "text-primary",              label: "Prise voix"      },
+  recording:  { bg: "bg-sky-500/15",   text: "text-sky-400",              label: "Prise voix"      },
   mixing:     { bg: "bg-accent/15",    text: "text-accent",               label: "Mixage"          },
   mastering:  { bg: "bg-success/15",   text: "text-success",              label: "Mastering"       },
   production: { bg: "bg-warning/15",   text: "text-warning",              label: "Prod/Beatmaking" },
