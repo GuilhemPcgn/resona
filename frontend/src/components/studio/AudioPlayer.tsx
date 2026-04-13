@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Volume2, VolumeX, X, Music, MessageSquare, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { CommentForm } from "@/components/audio/CommentForm";
 import { CommentsPanel } from "@/components/audio/CommentsPanel";
 import { fetchWithAuth } from "@/lib/api-client";
 import { useComments, useAddComment } from "@/hooks/use-comments";
+import { usePlayerStore } from "@/store/playerStore";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,6 +47,30 @@ export function AudioPlayer({ fileId, fileName, onClose, bpm }: AudioPlayerProps
   // Ref vers WaveformPlayer pour seekTo / getCurrentTime
   const playerRef = useRef<WaveformPlayerRef>(null);
 
+  // URL signée stockée dans un ref pour être accessible dans le cleanup
+  const signedUrlRef = useRef<string | null>(null);
+
+  // Détecte si la fermeture est manuelle (bouton ✕) ou par navigation
+  const closedManuallyRef = useRef(false);
+
+  // À l'unmount par navigation : passer le relais au GlobalPlayer
+  useEffect(() => {
+    return () => {
+      if (closedManuallyRef.current) return;
+      const currentTime = playerRef.current?.getCurrentTime() ?? 0;
+      // Charger la track avec l'URL déjà connue pour éviter un re-fetch
+      usePlayerStore.getState().setQueue(
+        [{ id: fileId, title: fileName, url: signedUrlRef.current ?? undefined }],
+        0,
+      );
+      if (currentTime > 0) {
+        usePlayerStore.getState().seek(currentTime);
+      }
+      usePlayerStore.getState().play();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // mount only — fileId/fileName stables, signedUrlRef toujours à jour
+
   // URL signée + peaks — mise en cache 55 min (URL valide 1h)
   const { data: urlData, isLoading } = useQuery<SignedUrlResponse>({
     queryKey: ["file-url", fileId],
@@ -55,6 +80,11 @@ export function AudioPlayer({ fileId, fileName, onClose, bpm }: AudioPlayerProps
     },
     staleTime: 55 * 60 * 1000,
   });
+
+  // Garder signedUrlRef à jour pour le cleanup (pas de dépendance stale)
+  useEffect(() => {
+    if (urlData?.signedUrl) signedUrlRef.current = urlData.signedUrl;
+  }, [urlData?.signedUrl]);
 
   // Commentaires (pour les marqueurs sur la waveform)
   const { data: comments = [] } = useComments(fileId);
@@ -126,7 +156,10 @@ export function AudioPlayer({ fileId, fileName, onClose, bpm }: AudioPlayerProps
                 variant="ghost"
                 size="sm"
                 className="h-7 w-7 p-0 shrink-0"
-                onClick={onClose}
+                onClick={() => {
+                  closedManuallyRef.current = true;
+                  onClose();
+                }}
               >
                 <X className="w-4 h-4" />
                 <span className="sr-only">Fermer le lecteur</span>

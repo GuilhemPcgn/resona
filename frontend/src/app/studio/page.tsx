@@ -4,10 +4,22 @@ import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { FileUploader } from "@/components/studio/FileUploader";
 import { FileList } from "@/components/studio/FileList";
+import { AudioPlayer } from "@/components/studio/AudioPlayer";
 
 export default function StudioPage() {
-  // Projet actif partagé entre FileUploader et FileList
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [playingFileId,   setPlayingFileId]   = useState<string | null>(null);
+  const [playingFileName, setPlayingFileName] = useState<string>("");
+
+  const handlePlay = (fileId: string, fileName: string) => {
+    setPlayingFileId(fileId);
+    setPlayingFileName(fileName);
+  };
+
+  const handleClose = () => {
+    setPlayingFileId(null);
+    setPlayingFileName("");
+  };
 
   return (
     <AppLayout>
@@ -26,10 +38,21 @@ export default function StudioPage() {
           onProjectChange={setSelectedProjectId}
         />
 
-        {/* Liste des fichiers — lecture via le GlobalPlayer */}
+        {/* Lecteur waveform + commentaires */}
+        {playingFileId && (
+          <AudioPlayer
+            fileId={playingFileId}
+            fileName={playingFileName}
+            onClose={handleClose}
+          />
+        )}
+
+        {/* Liste des fichiers */}
         <FileList
           selectedProjectId={selectedProjectId}
           onProjectChange={setSelectedProjectId}
+          playingFileId={playingFileId}
+          onPlay={handlePlay}
         />
       </div>
     </AppLayout>

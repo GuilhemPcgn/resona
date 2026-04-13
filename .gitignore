@@ -97,3 +97,9 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+
+
+# Création compte admin
+create-admin.ts
+

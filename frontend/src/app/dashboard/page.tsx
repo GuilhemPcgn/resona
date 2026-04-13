@@ -208,6 +208,7 @@ export default function DashboardPage() {
   });
 
   const { data: stats, isLoading: statsLoading, error: statsError } = useStats();
+  if (statsError) console.error("[stats] erreur:", statsError);
   const { data: projectsData, isLoading: projectsLoading } = useRecentProjects();
   const { data: clientsData, isLoading: clientsLoading } = useRecentClients();
   const { data: invoicesData, isLoading: invoicesLoading } = usePendingInvoices();

@@ -59,7 +59,13 @@ export function GlobalPlayer() {
       usePlayerStore.getState().next();
     };
     const onCanPlay = () => {
-      if (usePlayerStore.getState().isPlaying) {
+      const state = usePlayerStore.getState();
+      // Appliquer le seek en attente avant de jouer (timing correct)
+      if (state.seekTarget !== undefined) {
+        audio.currentTime = state.seekTarget;
+        state.clearSeek();
+      }
+      if (state.isPlaying) {
         audio.play().catch(console.error);
       }
     };

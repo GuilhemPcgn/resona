@@ -24,7 +24,7 @@ export interface Client {
 
 export interface Invoice {
   id: string;
-  status: 'draft' | 'pending' | 'paid' | 'overdue';
+  status: 'draft' | 'sent' | 'overdue' | 'paid' | 'cancelled';
   total_amount: number;
   due_date?: string;
   created_at: string;
@@ -54,7 +54,7 @@ export function usePendingInvoices() {
   return useQuery<{ data: Invoice[]; total: number }>({
     queryKey: ['dashboard', 'invoices', 'pending'],
     queryFn: async () => {
-      const res = await fetchWithAuth('/invoices?status=pending&limit=5');
+      const res = await fetchWithAuth('/invoices?status=sent,overdue&limit=5');
       return res.json();
     },
   });

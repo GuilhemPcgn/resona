@@ -39,7 +39,8 @@ export class InvoicesService {
       .range(offset, offset + limit - 1);
 
     if (status) {
-      query = query.eq('status', status);
+      const statuses = status.split(',').map((s) => s.trim()).filter(Boolean);
+      query = query.in('status', statuses);
     }
 
     const { data, error, count } = await query;

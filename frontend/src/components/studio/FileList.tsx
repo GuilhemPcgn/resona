@@ -57,6 +57,9 @@ interface Project {
 interface FileListProps {
   selectedProjectId: string;
   onProjectChange: (id: string) => void;
+  /** Si fourni, le clic Play ouvre l'AudioPlayer (waveform + commentaires) */
+  onPlay?: (fileId: string, fileName: string) => void;
+  playingFileId?: string | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -76,7 +79,7 @@ function fmtDate(iso: string) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function FileList({ selectedProjectId, onProjectChange }: FileListProps) {
+export function FileList({ selectedProjectId, onProjectChange, onPlay, playingFileId }: FileListProps) {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
@@ -129,19 +132,26 @@ export function FileList({ selectedProjectId, onProjectChange }: FileListProps) 
     },
   });
 
-  // Lecture via le GlobalPlayer
-  const handleFilePlay = (fileId: string) => {
+  // Lecture : si onPlay fourni → ouvre l'AudioPlayer (waveform + commentaires)
+  //           ET charge dans le GlobalPlayer (sans démarrer — pas de double son)
+  //           sinon           → charge et démarre dans le GlobalPlayer
+  const handleFilePlay = (fileId: string, fileName: string) => {
     const queue: Track[] = files.map((f) => ({ id: f.id, title: f.filename }));
     const startIndex = files.findIndex((f) => f.id === fileId);
     const idx = startIndex >= 0 ? startIndex : 0;
 
-    // If clicking the currently playing track → toggle play/pause
+    if (onPlay) {
+      // Mode Studio : AudioPlayer gère la lecture, GlobalPlayer reste inactif
+      // Le relais se fait à la navigation (cleanup de AudioPlayer)
+      onPlay(fileId, fileName);
+      return;
+    }
+
     if (currentTrack?.id === fileId) {
       toggle();
       return;
     }
 
-    // Set the whole project's files as queue and start at this track
     setQueue(queue, idx);
     play();
   };
@@ -237,8 +247,13 @@ export function FileList({ selectedProjectId, onProjectChange }: FileListProps) 
           {!isLoading && files.length > 0 && (
             <div className="space-y-2">
               {files.map((file) => {
-                const isCurrentTrack = currentTrack?.id === file.id;
-                const isActiveAndPlaying = isCurrentTrack && isPlaying;
+                // En mode AudioPlayer : actif (surbrillance) si le panneau est ouvert pour ce fichier
+              // En mode GlobalPlayer : actif si c'est la piste courante dans la barre
+              const isCurrentTrack = onPlay
+                ? playingFileId === file.id
+                : currentTrack?.id === file.id;
+              // Icône Pause uniquement si le GlobalPlayer joue ce fichier
+              const isActiveAndPlaying = isCurrentTrack && !onPlay && isPlaying;
                 return (
                   <div
                     key={file.id}
@@ -259,7 +274,7 @@ export function FileList({ selectedProjectId, onProjectChange }: FileListProps) 
                           ? "bg-primary text-primary-foreground shadow-glow"
                           : "border-border/50 hover:border-primary/40 hover:bg-primary/5",
                       ].join(" ")}
-                      onClick={() => handleFilePlay(file.id)}
+                      onClick={() => handleFilePlay(file.id, file.filename)}
                     >
                       {isActiveAndPlaying ? (
                         <Pause className="w-4 h-4" />
